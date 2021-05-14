@@ -43,8 +43,8 @@ export class UsersComponent implements OnInit {
 
   userData: UserData[];
   filterGroup: FormGroup;
-  filterText = '';
-  selectedType = '';
+  filterText:string = '';
+  selectedType:string = '';
   filterValue: UserData[];
 
   constructor(private readonly userService: UsersService) {
