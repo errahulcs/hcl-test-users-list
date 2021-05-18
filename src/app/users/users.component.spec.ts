@@ -65,12 +65,23 @@ describe('UsersComponent', () => {
     done();
   });
 
-  it('Default selected option dropdown', async () => {
+  it('If filter type is selected and there is no text in filter box should show all data', async (done) => {
+    fixture.detectChanges();
+    expect(filterText.value).toBeFalsy();
+    expect(selectType.value).toBe('name');
+    fixture.whenStable().then(() => {
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(5);
+    });
+    done();
+  });
+
+  it('By Default filter Type "name" option will be selected', async () => {
     const selectEl = fixture.debugElement.query(By.css('select'));
     expect(selectEl.nativeElement.value).toEqual('name');
   });
 
-  it('Default filter with no search result', async (done) => {
+  it('Type garbage text in filter box gets "No Result Found" in results', async (done) => {
     await pushInputValue(filterText, "xzlkan");
     fixture.whenStable().then(() => {
       let rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
@@ -80,18 +91,21 @@ describe('UsersComponent', () => {
     done();
   });
 
-  it('Default filter search result', async (done) => {
+  it('Search result with default filter type "name" gets result according to the user  Name', async (done) => {
     await pushInputValue(filterText, "Leanne");
     fixture.whenStable().then(() => {
       const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
       expect(rowDebugElements.length).toBe(1);
       let row = rowDebugElements[0];
       expect(row.cells[0].innerHTML).toBe("Leanne Graham");
+      expect(row.cells[1].innerHTML).toBe("Bret");
+      expect(row.cells[2].innerHTML).toBe("Sincere@april.biz");
+      expect(row.cells[3].innerHTML).toBe("1-770-736-8031 x56442");
     });
     done();
   });
 
-  it('Custom column type filter search result', async (done) => {
+  it('Select column type "email" should get filterd result according to the User Email', async (done) => {
     await pushDropdownValue(selectType, "email");
     await pushInputValue(filterText, "Shanna@melissa.tv");
     fixture.whenStable().then(() => {
@@ -101,10 +115,73 @@ describe('UsersComponent', () => {
       expect(rowDebugElements.length).toBe(1);
       let row = rowDebugElements[0];
       expect(row.cells[0].innerHTML).toBe("Ervin Howell");
+      expect(row.cells[1].innerHTML).toBe("Antonette");
+      expect(row.cells[2].innerHTML).toBe("Shanna@melissa.tv");
+      expect(row.cells[3].innerHTML).toBe("010-692-6593 x09125");
     });
     done();
   });
  
+  it('Perform series of operations', async (done) => {
+   
+    await pushDropdownValue(selectType, "phone");
+    await pushInputValue(filterText, "1-463-123-4447");
+    await fixture.whenStable().then(() => {
+      const selectEl = fixture.debugElement.query(By.css('select'));
+      expect(selectEl.nativeElement.value).toEqual('phone');
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Clementine Bauch");
+      expect(row.cells[1].innerHTML).toBe("Samantha");
+      expect(row.cells[2].innerHTML).toBe("Nathan@yesenia.net");
+      expect(row.cells[3].innerHTML).toBe("1-463-123-4447");
+    });
+   
+    await pushDropdownValue(selectType, "email");
+    await pushInputValue(filterText, "Shanna@melissa.tv");
+    await fixture.whenStable().then(() => {
+      const selectEl = fixture.debugElement.query(By.css('select'));
+      expect(selectEl.nativeElement.value).toEqual('email');
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Ervin Howell");
+      expect(row.cells[1].innerHTML).toBe("Antonette");
+      expect(row.cells[2].innerHTML).toBe("Shanna@melissa.tv");
+      expect(row.cells[3].innerHTML).toBe("010-692-6593 x09125");
+    });
+    
+    await pushDropdownValue(selectType, "name");
+    await pushInputValue(filterText, "Leanne");
+    await fixture.whenStable().then(() => {
+      const selectEl = fixture.debugElement.query(By.css('select'));
+      expect(selectEl.nativeElement.value).toEqual('name');
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Leanne Graham");
+      expect(row.cells[1].innerHTML).toBe("Bret");
+      expect(row.cells[2].innerHTML).toBe("Sincere@april.biz");
+      expect(row.cells[3].innerHTML).toBe("1-770-736-8031 x56442");
+    });  
+    
+    await pushDropdownValue(selectType, "username");
+    await pushInputValue(filterText, "Bret");
+    await fixture.whenStable().then(() => {
+      const selectEl = fixture.debugElement.query(By.css('select'));
+      expect(selectEl.nativeElement.value).toEqual('username');
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Leanne Graham");
+      expect(row.cells[1].innerHTML).toBe("Bret");
+      expect(row.cells[2].innerHTML).toBe("Sincere@april.biz");
+      expect(row.cells[3].innerHTML).toBe("1-770-736-8031 x56442");
+    });  
+
+    done();
+  });
 
 
   const userData = [
