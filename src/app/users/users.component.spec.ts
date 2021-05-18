@@ -71,7 +71,6 @@ describe('UsersComponent', () => {
   });
 
   it('Default filter with no search result', async (done) => {
-    fixture.detectChanges();
     await pushInputValue(filterText, "xzlkan");
     fixture.whenStable().then(() => {
       let rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
@@ -82,7 +81,6 @@ describe('UsersComponent', () => {
   });
 
   it('Default filter search result', async (done) => {
-    fixture.detectChanges();
     await pushInputValue(filterText, "Leanne");
     fixture.whenStable().then(() => {
       const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
@@ -94,7 +92,6 @@ describe('UsersComponent', () => {
   });
 
   it('Custom column type filter search result', async (done) => {
-    fixture.detectChanges();
     await pushDropdownValue(selectType, "email");
     await pushInputValue(filterText, "Shanna@melissa.tv");
     fixture.whenStable().then(() => {

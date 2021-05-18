@@ -18,7 +18,7 @@ export class UsersService {
   
   /**
    * Api to get the users list
-  *  @returns Users List.
+  *  @returns {UserData[]} User List.
   */
   getUsers(): Observable<UserData[]> {
     return this.http.get<UserData[]>(this.usersApi).pipe(

@@ -46,7 +46,7 @@ export class UsersComponent implements OnInit {
   constructor(private readonly userService: UsersService) {}
 
   /*
-  * ngOnInit Angular lifecycle hooks to initilize the forms and get the data.
+  * ngOnInit Angular lifecycle hooks to get the data, to initilize the form and to subscribe to filterText valueChanges change detector.
   */
   public ngOnInit(): void {
     this.getUserData();
@@ -74,7 +74,8 @@ export class UsersComponent implements OnInit {
   }
 
   /*
-  * Filter change detector to filter the result according to the search
+  * Filter change detector to filter the result according to the searched text. 
+  * It will update the filtered result to {filterValue}
   */
   filterChangeDetection() {
     this.filterGroup.get('filterText').valueChanges.subscribe((value) => {
