@@ -1,23 +1,34 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UsersComponent } from './users.component';
-let Bluebird = require('bluebird');
-import { FilterOption } from './filter-option.interface';
 import { By } from '@angular/platform-browser';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('UsersComponent', () => {
+
+  let component: UsersComponent;
   let fixture: ComponentFixture<UsersComponent>;
-  let appInput;
- 
-  const pushValue = async (value,fixture) => {
-    appInput.value = value;
-    // appInput.dispatchEvent(new Event('change'));
-    appInput.dispatchEvent(new Event('input'));
+  let compiled: any;
+  let selectType: any;
+  let filterText: any;
+
+  const pushInputValue = async (el: any, value: any) => {
+    el.value = value;
+    el.dispatchEvent(new Event('change'));
+    el.dispatchEvent(new Event('input'));
     await fixture.whenStable();
-   
+    await fixture.detectChanges();
   };
 
-  const getByTestId = (testId: string, compiled) => {
+  const pushDropdownValue = async (el:any, value:any) => {
+    el.value = value;
+    el.dispatchEvent(new Event('change'));
+    el.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    await fixture.detectChanges();
+  };
+
+  const getByTestId = (testId: string) => {
     return compiled.querySelector(`[data-test-id="${testId}"]`);
   };
 
@@ -25,47 +36,78 @@ describe('UsersComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [UsersComponent],
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, ReactiveFormsModule],
 
     }).compileComponents();
 
   }));
 
-  const factory = () => {
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(UsersComponent);
-    const component: UsersComponent = fixture.componentInstance;
+    fixture.autoDetectChanges(true);
+    compiled = fixture.debugElement.nativeElement;
+    component = fixture.componentInstance;
     component.userData = userData;
-    const compiled = fixture.debugElement.nativeElement;
+    selectType = getByTestId('select-type');
+    filterText = getByTestId('filter-input');
     fixture.detectChanges();
-    return {
-      fixture,
-      component,
-      compiled
-    };
-  };
-
-
-  it('Initial UI is rendered as expected', async () => {
-    const { compiled } = factory();
-    await fixture.whenStable();
-    appInput = getByTestId('all-data', compiled);
-    expect(appInput.value).toBeFalsy();
   });
 
-  it('Default Selected option dropdown', async () => {
-    factory();
+  it('Initial UI is rendered as expected', async (done) => {
+    fixture.detectChanges();
+    expect(filterText.value).toBeFalsy();
+    expect(selectType.value).toBe('name');
+    fixture.whenStable().then(() => {
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(5);
+    });
+    done();
+  });
+
+  it('Default selected option dropdown', async () => {
     const selectEl = fixture.debugElement.query(By.css('select'));
     expect(selectEl.nativeElement.value).toEqual('name');
   });
 
-  // it('Filter Result', async () => {
-  //   const {compiled, fixture} = factory();
-  //   await fixture.whenStable();
-  //   appInput = getByTestId('filter-input', compiled);
-  //   await pushValue('Leanne Graham', fixture);
-  //   await fixture.detectChanges();
-  //    expect(getByTestId('output-name', compiled).innerHTML.trim()).toEqual('Leanne Graham');
-  // });
+  it('Default filter with no search result', async (done) => {
+    fixture.detectChanges();
+    await pushInputValue(filterText, "xzlkan");
+    fixture.whenStable().then(() => {
+      let rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("No Result Found");
+    });
+    done();
+  });
+
+  it('Default filter search result', async (done) => {
+    fixture.detectChanges();
+    await pushInputValue(filterText, "Leanne");
+    fixture.whenStable().then(() => {
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Leanne Graham");
+    });
+    done();
+  });
+
+  it('Custom column type filter search result', async (done) => {
+    fixture.detectChanges();
+    await pushDropdownValue(selectType, "email");
+    await pushInputValue(filterText, "Shanna@melissa.tv");
+    fixture.whenStable().then(() => {
+      const selectEl = fixture.debugElement.query(By.css('select'));
+      expect(selectEl.nativeElement.value).toEqual('email');
+      const rowDebugElements = fixture.nativeElement.querySelectorAll('tbody tr');
+      expect(rowDebugElements.length).toBe(1);
+      let row = rowDebugElements[0];
+      expect(row.cells[0].innerHTML).toBe("Ervin Howell");
+    });
+    done();
+  });
+ 
 
 
   const userData = [

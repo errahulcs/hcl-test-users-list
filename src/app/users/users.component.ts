@@ -1,15 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FilterOption } from './filter-option.interface';
 import { UsersService } from '../users.service';
+import {UserData} from '../model/user-data';
+
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-class UserData {
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  website: string;
-}
 
 @Component({
   selector: 'app-users',
@@ -47,30 +42,40 @@ export class UsersComponent implements OnInit {
   selectedType:string = '';
   filterValue: UserData[];
 
-  constructor(private readonly userService: UsersService) {
+  /* UseCompoment constructor for dependency injection */
+  constructor(private readonly userService: UsersService) {}
 
-  }
-
+  /*
+  * ngOnInit Angular lifecycle hooks to initilize the forms and get the data.
+  */
   public ngOnInit(): void {
     this.getUserData();
     this.initUserForm();
     this.filterChangeDetection()
   }
 
+  /*
+  * Gets Users List from the Users service.
+  */
   getUserData() {
-    this.userService.getUserData().subscribe((response: UserData[]) => {
+    this.userService.getUsers().subscribe((response: UserData[]) => {
       this.userData = response;
     });
   }
 
+  /*
+  * Initilize the user form with default 'name' selector
+  */
   initUserForm() {
     this.filterGroup = new FormGroup({
       filterText: new FormControl('', [Validators.required]),
       selectedType: new FormControl('name')
-
     });
   }
 
+  /*
+  * Filter change detector to filter the result according to the search
+  */
   filterChangeDetection() {
     this.filterGroup.get('filterText').valueChanges.subscribe((value) => {
       const selectedType = this.filterGroup.controls['selectedType'].value;

@@ -2,12 +2,13 @@
   <div class="control-panel">
     <form [formGroup]="filterGroup">
       <label class="select">Select column to filter:
-        <select  formControlName="selectedType" data-test-id="select-type" >
+        <select formControlName="selectedType" data-test-id="select-type">
           <option *ngFor="let opt of options" [value]="opt.value">{{ opt.text }}</option>
         </select>
       </label>
       <label class="input">Enter filter keywords:
-        <input type="text" formControlName="filterText" data-test-id="filter-input" placeholder="filter keywords go here..." />
+        <input type="text" formControlName="filterText" data-test-id="filter-input"
+          placeholder="filter keywords go here..." />
       </label>
     </form>
   </div>
@@ -22,25 +23,30 @@
           <th>Website</th>
         </tr>
       </thead>
-      <tbody *ngIf="filterValue==undefined && userData!=undefined && userData.length>0">
-       
-        <tr data-test-id="all-data"  *ngFor="let usrData of userData">
+      <tbody data-test-id="all-data" *ngIf="filterValue==undefined && userData!=undefined && userData.length>0">
+        
+        <tr  *ngFor="let usrData of userData">
           <td>{{usrData.name}}</td>
           <td>{{usrData.username}}</td>
           <td>{{usrData.email}}</td>
           <td>{{usrData.phone}}</td>
           <td>{{usrData.website}}</td>
         </tr>
-     
+
       </tbody>
-      <tbody *ngIf="filterValue!=undefined && filterValue.length > 0">
-      <tr data-test-id="filter-data" *ngFor="let usrData of filterValue">
-        <td data-test-id="output-name" >{{usrData.name}}</td>
-        <td data-test-id="output-username" >{{usrData.username}}</td>
-        <td data-test-id="output-email" >{{usrData.email}}</td>
-        <td data-test-id="output-phone" >{{usrData.phone}}</td>
-        <td data-test-id="output-website">{{usrData.website}}</td>
-      </tr>
+      <tbody data-test-id="filter-data" *ngIf="filterValue!=undefined && filterValue.length > 0">
+        <tr  *ngFor="let usrData of filterValue" [attr.data-test-id]="usrData.username">
+          <td data-test-id="output-name">{{usrData.name}}</td>
+          <td data-test-id="output-username">{{usrData.username}}</td>
+          <td data-test-id="output-email">{{usrData.email}}</td>
+          <td data-test-id="output-phone">{{usrData.phone}}</td>
+          <td data-test-id="output-website">{{usrData.website}}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="filterValue!=undefined && userData!=undefined && filterValue.length==0">
+        <tr data-test-id="no-data">
+          <td colspan="5">No Result Found</td>
+        </tr>
       </tbody>
     </table>
   </div>
